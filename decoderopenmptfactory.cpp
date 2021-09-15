@@ -100,8 +100,8 @@ MetaDataModel *DecoderOpenMPTFactory::createMetaDataModel(const QString &path, b
 
 void DecoderOpenMPTFactory::showSettings(QWidget *parent)
 {
-    SettingsDialog *d = new SettingsDialog(parent);
-    d->show();
+    SettingsDialog *s = new SettingsDialog(parent);
+    s->show();
 }
 
 void DecoderOpenMPTFactory::showAbout(QWidget *parent)
