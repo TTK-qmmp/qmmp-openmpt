@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013-2021 by Ilya Kotov                                 *
+ *   Copyright (C) 2013-2022 by Ilya Kotov                                 *
  *   forkotov02@ya.ru                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -38,7 +38,7 @@ public:
 
     bool initialize();
 
-    static QMap<QString, int> getInterpolators();
+    static QMap<QString, int> interpolators();
     bool isValidInterpolator(int value);
     void setInterpolator(int value);
     bool isValidStereoSeparation(int separation);
