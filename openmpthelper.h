@@ -1,21 +1,19 @@
 /***************************************************************************
- *   Copyright (C) 2013-2022 by Ilya Kotov                                 *
- *   forkotov02@ya.ru                                                      *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ * This file is part of the TTK qmmp plugin project
+ * Copyright (C) 2015 - 2022 Greedysky Studio
+
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License along
+ * with this program; If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
 
 #ifndef OPENMPTHELPER_H
@@ -27,15 +25,21 @@
 #include <libopenmpt/libopenmpt.h>
 #include <libopenmpt/libopenmpt_stream_callbacks_file.h>
 
-/**
-    @author Ilya Kotov <forkotov02@ya.ru>
-*/
+#define INTERP_NONE     1
+#define INTERP_LINEAR   2
+#define INTERP_CUBIC    4
+#define INTERP_WINDOWED 8
+
+/*!
+ * @author Greedysky <greedysky@163.com>
+ */
 class OpenMPTHelper
 {
 public:
     explicit OpenMPTHelper(QIODevice *input);
     ~OpenMPTHelper();
 
+    void deinit();
     bool initialize();
 
     static QMap<QString, int> interpolators();
@@ -44,25 +48,26 @@ public:
     bool isValidStereoSeparation(int separation);
     void setStereoSeparation(int separation);
 
-    qint64 read(unsigned char *data, qint64 maxSize);
-    void seek(qint64 pos);
+    inline void seek(qint64 time) { openmpt_module_set_position_seconds(m_mod, time / 1000.0); }
+    inline int totalTime() const { return m_duration; }
 
-    int bitrate() const;
-    inline int rate() const { return 44100; }
+    inline int bitrate() const { m_input->size() * 8.0 / totalTime() + 1.0f; }
+    inline int sampleRate() const { return 44100; }
     inline int channels() const { return 2; }
     inline int depth() const { return 16; }
-    inline int length() const { return m_duration; }
 
-    inline const QString title() const { return m_title; }
-    inline const QString comment() const { return m_comment; }
+    qint64 read(unsigned char *data, qint64 maxSize);
+
+    inline QString title() const { return m_title; }
+    inline QString comment() const { return m_comment; }
 
     inline int patternCount() const { return m_patternCount; }
     inline int channelCount() const { return m_channelCount; }
     inline int sampleCount() const { return m_sampleCount; }
     inline int instrumentCount() const { return m_instrumentCount; }
 
-    inline const QStringList instruments()const  { return m_instruments; }
-    inline const QStringList samples() const { return m_samples; }
+    inline QStringList instruments()const  { return m_instruments; }
+    inline QStringList samples() const { return m_samples; }
 
 private:
     QString toString(const char *input);

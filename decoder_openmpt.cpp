@@ -2,15 +2,32 @@
 
 #include <QSettings>
 
+DecoderOpenMPT *DecoderOpenMPT::m_instance = nullptr;
+
 DecoderOpenMPT::DecoderOpenMPT(QIODevice *input)
     : Decoder(input)
 {
-
+    m_instance = this;
 }
 
 DecoderOpenMPT::~DecoderOpenMPT()
 {
+    m_instance = nullptr;
     delete m_helper;
+}
+
+DecoderOpenMPT *DecoderOpenMPT::instance()
+{
+    return m_instance;
+}
+
+void DecoderOpenMPT::readSettings()
+{
+    QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+    settings.beginGroup("OpenMPT");
+    m_helper->setInterpolator(settings.value("interpolator", INTERP_WINDOWED).toInt());
+    m_helper->setStereoSeparation(settings.value("stereo_separation", 70).toInt());
+    settings.endGroup();
 }
 
 bool DecoderOpenMPT::initialize()
@@ -28,14 +45,16 @@ bool DecoderOpenMPT::initialize()
         return false;
     }
 
-    configure(m_helper->rate(), m_helper->channels(), Qmmp::PCM_FLOAT);
-    qDebug("DecoderOpenMPT: initialize succes");
+    readSettings();
+
+    configure(m_helper->sampleRate(), m_helper->channels(), Qmmp::PCM_FLOAT);
+    qDebug("DecoderOpenMPT: initialize success");
     return true;
 }
 
 qint64 DecoderOpenMPT::totalTime() const
 {
-    return m_helper->length();
+    return m_helper->totalTime();
 }
 
 int DecoderOpenMPT::bitrate() const
@@ -45,16 +64,10 @@ int DecoderOpenMPT::bitrate() const
 
 qint64 DecoderOpenMPT::read(unsigned char *data, qint64 maxSize)
 {
-    QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
-    settings.beginGroup("OpenMPT");
-    m_helper->setInterpolator(settings.value("interpolator", 8).toInt());
-    m_helper->setStereoSeparation(settings.value("stereo_separation", 70).toInt());
-    settings.endGroup();
-
     return m_helper->read(data, maxSize);
 }
 
-void DecoderOpenMPT::seek(qint64 pos)
+void DecoderOpenMPT::seek(qint64 time)
 {
-    m_helper->seek(pos);
+    m_helper->seek(time);
 }

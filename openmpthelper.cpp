@@ -1,9 +1,5 @@
 #include "openmpthelper.h"
-
-#define INTERP_NONE     1
-#define INTERP_LINEAR   2
-#define INTERP_CUBIC    4
-#define INTERP_WINDOWED 8
+#include "archivereader.h"
 
 OpenMPTHelper::OpenMPTHelper(QIODevice *input)
     : m_input(input)
@@ -13,6 +9,11 @@ OpenMPTHelper::OpenMPTHelper(QIODevice *input)
 
 OpenMPTHelper::~OpenMPTHelper()
 {
+    deinit();
+}
+
+void OpenMPTHelper::deinit()
+{
     if(m_mod)
     {
         openmpt_module_destroy(m_mod);
@@ -21,7 +22,20 @@ OpenMPTHelper::~OpenMPTHelper()
 
 bool OpenMPTHelper::initialize()
 {
-    m_mod = openmpt_module_create2(callbacks, m_input, openmpt_log_func_silent, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    {
+        QFile *file = static_cast<QFile*>(m_input);
+        const QString &path = file ? file->fileName() : QString();
+        if(ArchiveReader::isSupported(path))
+        {
+            const QByteArray &data = ArchiveReader::unpack(path);
+            m_mod = openmpt_module_create_from_memory2(data.constData(), data.length(), openmpt_log_func_silent, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        }
+        else
+        {
+            m_mod = openmpt_module_create2(callbacks, m_input, openmpt_log_func_silent, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        }
+    }
+
     if(!m_mod)
     {
         return false;
@@ -139,16 +153,6 @@ void OpenMPTHelper::setStereoSeparation(int separation)
 qint64 OpenMPTHelper::read(unsigned char *data, qint64 maxSize)
 {
     maxSize /= sizeof(float) * channels();
-    const std::size_t n = openmpt_module_read_interleaved_float_stereo(m_mod, rate(), maxSize, reinterpret_cast<float *>(data));
+    const std::size_t n = openmpt_module_read_interleaved_float_stereo(m_mod, sampleRate(), maxSize, reinterpret_cast<float *>(data));
     return n * channels() * sizeof(float);
-}
-
-void OpenMPTHelper::seek(qint64 pos)
-{
-    openmpt_module_set_position_seconds(m_mod, pos / 1000.0);
-}
-
-int OpenMPTHelper::bitrate() const
-{
-    return m_input->size() * 8.0 / length() + 1.0f;
 }

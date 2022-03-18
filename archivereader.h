@@ -16,29 +16,20 @@
  * with this program; If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
 
-#ifndef DECODEROPENMPTFACTORY_H
-#define DECODEROPENMPTFACTORY_H
+#ifndef ARCHIVEREADER_H
+#define ARCHIVEREADER_H
 
-#include <qmmp/decoderfactory.h>
+#include <QFile>
 
 /*!
  * @author Greedysky <greedysky@163.com>
  */
-class DecoderOpenMPTFactory : public QObject, DecoderFactory
+namespace ArchiveReader
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qmmp.qmmp.DecoderFactoryInterface.1.0")
-    Q_INTERFACES(DecoderFactory)
-public:
-    virtual bool canDecode(QIODevice *input) const override final;
-    virtual DecoderProperties properties() const override final;
-    virtual Decoder *create(const QString &path, QIODevice *input) override final;
-    virtual QList<TrackInfo*> createPlayList(const QString &path, TrackInfo::Parts parts, QStringList *ignoredFiles) override final;
-    virtual MetaDataModel* createMetaDataModel(const QString &path, bool readOnly) override final;
-    virtual void showSettings(QWidget *parent) override final;
-    virtual void showAbout(QWidget *parent) override final;
-    virtual QString translation() const override final;
-
-};
+    QStringList archiveFilters();
+    bool isSupported(const QString &path);
+    QByteArray unpack(const QString &path);
+}
 
 #endif
+

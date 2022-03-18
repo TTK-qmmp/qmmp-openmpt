@@ -2,6 +2,7 @@
 #include "decoder_openmpt.h"
 #include "openmptmetadatamodel.h"
 #include "openmpthelper.h"
+#include "archivereader.h"
 #include "settingsdialog.h"
 
 #include <QFile>
@@ -18,7 +19,6 @@ DecoderProperties DecoderOpenMPTFactory::properties() const
 {
     DecoderProperties properties;
     properties.name = tr("OpenMPT Plugin");
-    properties.description = tr("OpenMPT Module Files");
     properties.shortName = "openmpt";
     properties.filters << "*.669";
     properties.filters << "*.ams" << "*.amf";
@@ -35,6 +35,8 @@ DecoderProperties DecoderOpenMPTFactory::properties() const
     properties.filters << "*.ult" << "*.umx";
     properties.filters << "*.wow";
     properties.filters << "*.xm" << "*.xpk";
+    properties.filters << ArchiveReader::archiveFilters();
+    properties.description = "OpenMPT Module Files";
     properties.hasSettings = true;
     return properties;
 }
@@ -48,7 +50,6 @@ Decoder *DecoderOpenMPTFactory::create(const QString &path, QIODevice *input)
 QList<TrackInfo*> DecoderOpenMPTFactory::createPlayList(const QString &path, TrackInfo::Parts parts, QStringList *)
 {
     TrackInfo *info = new TrackInfo(path);
-
     if(parts == TrackInfo::Parts())
     {
         return QList<TrackInfo*>() << info;
@@ -81,11 +82,11 @@ QList<TrackInfo*> DecoderOpenMPTFactory::createPlayList(const QString &path, Tra
     if(parts & TrackInfo::Properties)
     {
         info->setValue(Qmmp::BITRATE, helper.bitrate());
-        info->setValue(Qmmp::SAMPLERATE, helper.rate());
+        info->setValue(Qmmp::SAMPLERATE, helper.sampleRate());
         info->setValue(Qmmp::CHANNELS, helper.channels());
         info->setValue(Qmmp::BITS_PER_SAMPLE, helper.depth());
         info->setValue(Qmmp::FORMAT_NAME, "OpenMPT");
-        info->setDuration(helper.length());
+        info->setDuration(helper.totalTime());
     }
 
     file.close();
