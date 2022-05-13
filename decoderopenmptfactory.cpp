@@ -5,7 +5,6 @@
 #include "archivereader.h"
 #include "settingsdialog.h"
 
-#include <QFile>
 #include <QSettings>
 #include <QMessageBox>
 
@@ -27,7 +26,7 @@ DecoderProperties DecoderOpenMPTFactory::properties() const
     properties.filters << "*.gdm";
     properties.filters << "*.it" << "*.ice" << "*.imf";
     properties.filters << "*.j2b";
-    properties.filters << "*.mod" << "*.mptm" << "*.m15" << "*.mtm" << "*.med" << "*.mdl" << "*.mt2" << "*.mms" << "*.mo3" << "*.mmcmp";
+    properties.filters << "*.mod" << "*.mptm" << "*.m15" << "*.mtm" << "*.med" << "*.mmd" << "*.mmd0" << "*.mmd1" << "*.mmd2" << "*.mmd3" << "*.mdl" << "*.mt2" << "*.mms" << "*.mo3" << "*.mmcmp";
     properties.filters << "*.nst";
     properties.filters << "*.okt" << "*.okta";
     properties.filters << "*.pt36" << "*.ptm" << "*.psm" << "*.plm" << "*.ppm";
@@ -35,7 +34,7 @@ DecoderProperties DecoderOpenMPTFactory::properties() const
     properties.filters << "*.ult" << "*.umx";
     properties.filters << "*.wow";
     properties.filters << "*.xm" << "*.xpk";
-    properties.filters << ArchiveReader::archiveFilters();
+    properties.filters << ArchiveReader::filters();
     properties.description = "OpenMPT Module Files";
     properties.hasSettings = true;
     return properties;
@@ -65,6 +64,7 @@ QList<TrackInfo*> DecoderOpenMPTFactory::createPlayList(const QString &path, Tra
     OpenMPTHelper helper(&file);
     if(!helper.initialize())
     {
+        file.close();
         delete info;
         return QList<TrackInfo*>();
     }
@@ -76,7 +76,11 @@ QList<TrackInfo*> DecoderOpenMPTFactory::createPlayList(const QString &path, Tra
         {
             info->setValue(Qmmp::TITLE, path.section('/', -1));
         }
-        info->setValue(Qmmp::TITLE, helper.title());
+        else
+        {
+            info->setValue(Qmmp::TITLE, helper.title());
+        }
+        info->setValue(Qmmp::COMMENT, helper.comment());
     }
 
     if(parts & TrackInfo::Properties)
@@ -101,8 +105,7 @@ MetaDataModel *DecoderOpenMPTFactory::createMetaDataModel(const QString &path, b
 
 void DecoderOpenMPTFactory::showSettings(QWidget *parent)
 {
-    SettingsDialog *s = new SettingsDialog(parent);
-    s->show();
+    (new SettingsDialog(parent))->show();
 }
 
 void DecoderOpenMPTFactory::showAbout(QWidget *parent)

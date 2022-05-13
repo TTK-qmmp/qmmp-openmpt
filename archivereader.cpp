@@ -3,9 +3,9 @@
 #include <QProcess>
 #include <qmmp/qmmp.h>
 
-#define EXECUTE_PATH    (Qmmp::pluginPath() + "/../archive.tkx")
+#define ARCHIVE_PATH    (Qmmp::pluginPath() + "/../archive.tkx")
 
-QStringList ArchiveReader::archiveFilters()
+QStringList ArchiveReader::filters()
 {
     QStringList path;
     path << "*.mdr" << "*.s3r" << "*.xmr" << "*.itr";
@@ -17,15 +17,15 @@ QStringList ArchiveReader::archiveFilters()
 
 bool ArchiveReader::isSupported(const QString &path)
 {
-    if(!QFile::exists(EXECUTE_PATH))
+    if(!QFile::exists(ARCHIVE_PATH) || path.isEmpty())
     {
         return false;
     }
 
     const QString &filePath = path.toLower();
-    for(const QString &suffix : archiveFilters())
+    for(const QString &suffix : filters())
     {
-        if(filePath.endsWith(suffix.mid(1, suffix.length())))
+        if(filePath.endsWith(suffix.mid(1)))
         {
             return true;
         }
@@ -38,7 +38,7 @@ QByteArray ArchiveReader::unpack(const QString &path)
     QProcess process;
     QStringList args;
     args << "-so" << "e" << path;
-    process.start(EXECUTE_PATH, args);
+    process.start(ARCHIVE_PATH, args);
     process.waitForFinished();
     return process.readAllStandardOutput();
 }
