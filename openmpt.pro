@@ -22,7 +22,6 @@ unix {
     target.path = $$PLUGIN_DIR/Input
     INSTALLS += target
     PKGCONFIG += libopenmpt
-    QMAKE_CLEAN = $$PLUGINS_PREFIX/Input/libopenmpt.so
 }
 
 win32 {
