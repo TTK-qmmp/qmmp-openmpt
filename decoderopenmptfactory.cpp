@@ -37,6 +37,7 @@ DecoderProperties DecoderOpenMPTFactory::properties() const
     properties.filters << ArchiveReader::filters();
     properties.description = "OpenMPT Module Files";
     properties.hasSettings = true;
+    properties.hasAbout = true;
     return properties;
 }
 
