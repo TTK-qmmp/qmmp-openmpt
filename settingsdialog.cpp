@@ -25,7 +25,11 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
 void SettingsDialog::accept()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QSettings settings;
+#else
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+#endif
     settings.beginGroup("OpenMPT");
     settings.setValue("interpolator", m_ui.interpolate_combo->itemData(m_ui.interpolate_combo->currentIndex()).toInt());
     settings.setValue("stereo_separation", m_ui.stereo_separation->value());
@@ -41,7 +45,11 @@ void SettingsDialog::accept()
 
 void SettingsDialog::restoreDefaults()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QSettings settings;
+#else
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+#endif
     settings.beginGroup("OpenMPT");
     setInterpolator(settings.value("interpolator", INTERP_WINDOWED).toInt());
     m_ui.stereo_separation->setSliderPosition(settings.value("stereo_separation", 100).toInt());

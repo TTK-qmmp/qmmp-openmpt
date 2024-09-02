@@ -23,7 +23,11 @@ DecoderOpenMPT *DecoderOpenMPT::instance()
 
 void DecoderOpenMPT::readSettings()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QSettings settings;
+#else
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+#endif
     settings.beginGroup("OpenMPT");
     m_helper->setInterpolator(settings.value("interpolator", INTERP_WINDOWED).toInt());
     m_helper->setStereoSeparation(settings.value("stereo_separation", 100).toInt());

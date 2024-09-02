@@ -73,7 +73,11 @@ QList<TrackInfo*> DecoderOpenMPTFactory::createPlayList(const QString &path, Tra
 
     if(parts & TrackInfo::MetaData)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        QSettings settings;
+#else
         QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+#endif
         if(settings.value("OpenMPT/use_file_name", false).toBool())
         {
             info->setValue(Qmmp::TITLE, path.section('/', -1));
