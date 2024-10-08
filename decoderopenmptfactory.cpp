@@ -109,10 +109,17 @@ MetaDataModel *DecoderOpenMPTFactory::createMetaDataModel(const QString &path, b
     return new OpenMPTMetaDataModel(path);
 }
 
+#if (QMMP_VERSION_INT < 0x10700) || (0x20000 <= QMMP_VERSION_INT && QMMP_VERSION_INT < 0x20200)
 void DecoderOpenMPTFactory::showSettings(QWidget *parent)
 {
     (new SettingsDialog(parent))->show();
 }
+#else
+QDialog *DecoderOpenMPTFactory::createSettings(QWidget *parent)
+{
+    return new SettingsDialog(parent);
+}
+#endif
 
 void DecoderOpenMPTFactory::showAbout(QWidget *parent)
 {
