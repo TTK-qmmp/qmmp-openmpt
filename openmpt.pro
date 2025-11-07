@@ -10,7 +10,7 @@ SOURCES += decoderopenmptfactory.cpp \
            openmpthelper.cpp \
            settingsdialog.cpp
 
-FORMS   += settingsdialog.ui
+FORMS += settingsdialog.ui
 
 #CONFIG += BUILD_PLUGIN_INSIDE
 contains(CONFIG, BUILD_PLUGIN_INSIDE){

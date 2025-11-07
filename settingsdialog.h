@@ -31,8 +31,8 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
 
 public slots:
-    virtual void accept() override final;
     void restoreDefaults();
+    virtual void accept() override final;
 
 private:
     Ui::SettingsDialog m_ui;
