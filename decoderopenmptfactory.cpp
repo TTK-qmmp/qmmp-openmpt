@@ -84,6 +84,8 @@ QList<TrackInfo*> DecoderOpenMPTFactory::createPlayList(const QString &path, Tra
         {
             info->setValue(Qmmp::TITLE, helper.title());
         }
+        info->setValue(Qmmp::ARTIST, helper.artist());
+        info->setValue(Qmmp::YEAR, helper.year());
         info->setValue(Qmmp::COMMENT, helper.comment());
     }
 
