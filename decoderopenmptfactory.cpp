@@ -125,7 +125,9 @@ void DecoderOpenMPTFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About OpenMPT Reader Plugin"),
                        tr("Qmmp OpenMPT Reader Plugin") + "\n" +
-                       tr("Written by: Greedysky <greedysky@163.com>"));
+                       tr("Written by: Greedysky <greedysky@163.com>") + "\n" +
+                       tr("Based on the source code from the libopenmpt") + "\n" +
+                       tr("Written by OpenMPT Devs (C) 2010"));
 }
 
 QString DecoderOpenMPTFactory::translation() const

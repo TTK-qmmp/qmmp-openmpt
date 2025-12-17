@@ -1,5 +1,6 @@
 This is a plugin for Qmmp (1.6.0 or greater) which supports module tracker file.
-(http://lib.openmpt.org/libopenmpt/)
+
+Based on [libopenmpt](http://lib.openmpt.org/libopenmpt) (A library to decode tracked music files).
 
 The following packages are required, including development headers,
 which some vendors split into separate packages:
